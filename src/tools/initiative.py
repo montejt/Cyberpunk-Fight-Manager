@@ -1,56 +1,51 @@
 """
-    The InitiativeQueue functions as a simple auto ordered list (ordered by the initiative).
+    The InitiativeList holds an ordered list of names and their corresponding initative number,
+    ordered by desc initiative
 
-    Form: [(name, initiative),...]
+    Format: [(name, initiative),...]
 """
-class InitiativeQueue:
+class InitiativeList:
     def __init__(self):
-        self.queue = []
+        self.initiatives = []
 
-    def add(self, nc, ni):
-        for i, (cc, ci) in enumerate(self.queue):
-            if ni == ci:
-                print("Tie at value: " + str(ni))
-                print(str(self))
-                break
-            elif ni > ci:
-                self.queue.insert(i, (nc, ni))
-                print("\"" + nc + "\" placed in initiative queue")
+    def add(self, name: str, initiative: int):
+    
+        for i, (currName, currInitiative) in enumerate(self.initiatives):
+            if initiative >= currInitiative:
+                self.initiatives.insert(i, (name, initiative))
                 break
         else:
-            # Never broke from loop, so queue is either empty or our initiative is smaller than all others,
+            # Never broke from loop, so list is either empty or our initiative is smaller than all others,
             # so place at end
-            self.queue.append((nc, ni))
-            print("\"" + nc + "\" placed in initiative queue")
+            self.initiatives.append((name, initiative))
+
+        print("{name} placed in initiative at {initiative}")
 
     def get_initiative(self, name):
-        for char, initiative in ((c, i) for c, i in self.queue if c == name):
-            # We found the character! Return their initative
-            print("Initiative of {}: {}".format(name, initiative))
+
+        for foundName, initiative in ((n, i) for n, i in self.initiatives if n == name):
             return initiative
         else:
-            # No Character found, give an error
-            print("\"" + name + "\" is not in the initiative queue")
+            print("Could not find {name} within the initiative")
 
     def remove(self, name):
-        for char, initiative in ((c, i) for c, i in self.queue if c == name):
-            # We found the character! Remove them!
-            self.queue.remove((char, initiative))
-            print("{} removed from queue!".format(name))
+
+        for foundName, initiative in ((c, i) for c, i in self.initiatives if c == name):
+            self.initiatives.remove((foundName, initiative))
+            print("{foundName} removed from initative")
             break
         else:
-            # No Character found, give an error
-            print("\"" + name + "\" is not in the initiative queue")
+            print("Could not find {name} within the initiative")
 
     def clear(self):
-        self.queue = []
-        print("Queue cleared!")
+        self.initiatives = []
+        print("Initative cleared")
 
     def print(self):
         print(str(self))
 
     def __str__(self):
-        string = "-----Initiative Queue-----\n"
-        for char, initiative in self.queue:
-            string += char + " : " + str(initiative) + "\n"
+        string = "-----Initiative-----\n"
+        for name, initiative in self.initiatives:
+            string += name + " : " + str(initiative) + "\n"
         return string

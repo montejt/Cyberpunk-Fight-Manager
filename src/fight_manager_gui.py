@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import scrolledtext
 
-from tools.initiative import InitiativeQueue
+from tools.initiative import InitiativeList
 from tools.npc import Npc
 from tools.npcmanager import NpcManager
 
@@ -14,7 +14,7 @@ CONFIRM_COLOR = "#00d123"
 
 MODIFIERS_FRAME = "mod_frame.frame.modifiers"
 
-queue = InitiativeQueue()
+queue = InitiativeList()
 manager = NpcManager()
 
 def set_npc_ds(npc, ds):

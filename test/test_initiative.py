@@ -1,63 +1,62 @@
 import unittest
-from src.tools.initiative import InitiativeQueue
+from src.tools.initiative import InitiativeList
 
 class Test(unittest.TestCase):
     def test_add(self):
         # Add 1
-        queue = InitiativeQueue()
-        queue.add("eight", 8)
-        self.assertEqual(queue.queue[0], ("eight", 8))
+        initiative = InitiativeList()
+        initiative.add("eight", 8)
+        self.assertEqual(initiative.initiatives[0], ("eight", 8))
 
         # Add second after
-        queue.add("seven", 7)
-        self.assertEqual(queue.queue, [("eight", 8), ("seven", 7)])
+        initiative.add("seven", 7)
+        self.assertEqual(initiative.initiatives, [("eight", 8), ("seven", 7)])
 
         # Add third before
-        queue.add("nine", 9)
-        self.assertEqual(queue.queue, [("nine", 9), ("eight", 8), ("seven", 7)])
+        initiative.add("nine", 9)
+        self.assertEqual(initiative.initiatives, [("nine", 9), ("eight", 8), ("seven", 7)])
 
     def test_add_same(self):
         # Add same initiative twice
-        queue = InitiativeQueue()
-        queue.add("eight", 8)
-        self.assertEqual(queue.queue[0], ("eight", 8))
+        initiative = InitiativeList()
+        initiative.add("eight", 8)
+        self.assertEqual(initiative.initiatives[0], ("eight", 8))
 
-        # Attempt to add second with same initiative
-        queue.add("beebus", 8)
-        self.assertEqual(queue.queue, [("eight", 8)])
+        initiative.add("beebus", 8)
+        self.assertEqual(initiative.initiatives, [("beebus", 8), ("eight", 8)])
 
     def test_remove(self):
-        queue = InitiativeQueue()
-        queue.add("Remove", 8)
-        self.assertEqual(queue.queue, [("Remove", 8)])
+        initiative = InitiativeList()
+        initiative.add("Remove", 8)
+        self.assertEqual(initiative.initiatives, [("Remove", 8)])
 
         # Remove it
-        queue.remove("Remove")
-        self.assertEqual(len(queue.queue), 0)
+        initiative.remove("Remove")
+        self.assertEqual(len(initiative.initiatives), 0)
 
         # Retry, but with three elements
-        queue.add("eight", 8)
-        self.assertEqual(queue.queue[0], ("eight", 8))
-        queue.add("seven", 7)
-        self.assertEqual(queue.queue, [("eight", 8), ("seven", 7)])
-        queue.add("nine", 9)
-        self.assertEqual(queue.queue, [("nine", 9), ("eight", 8), ("seven", 7)])
+        initiative.add("eight", 8)
+        self.assertEqual(initiative.initiatives[0], ("eight", 8))
+        initiative.add("seven", 7)
+        self.assertEqual(initiative.initiatives, [("eight", 8), ("seven", 7)])
+        initiative.add("nine", 9)
+        self.assertEqual(initiative.initiatives, [("nine", 9), ("eight", 8), ("seven", 7)])
 
         # Remove eight
-        queue.remove("eight")
-        self.assertEqual(queue.queue, [("nine", 9), ("seven", 7)])
+        initiative.remove("eight")
+        self.assertEqual(initiative.initiatives, [("nine", 9), ("seven", 7)])
 
     def test_clear(self):
-        # Fill a queue and clear it
-        queue = InitiativeQueue()
-        queue.add("eight", 8)
-        self.assertEqual(queue.queue[0], ("eight", 8))
-        queue.add("seven", 7)
-        self.assertEqual(queue.queue, [("eight", 8), ("seven", 7)])
-        queue.add("nine", 9)
-        self.assertEqual(queue.queue, [("nine", 9), ("eight", 8), ("seven", 7)])
-        queue.clear()
-        self.assertEqual(len(queue.queue), 0)
+        # Fill a initiative and clear it
+        initiative = InitiativeList()
+        initiative.add("eight", 8)
+        self.assertEqual(initiative.initiatives[0], ("eight", 8))
+        initiative.add("seven", 7)
+        self.assertEqual(initiative.initiatives, [("eight", 8), ("seven", 7)])
+        initiative.add("nine", 9)
+        self.assertEqual(initiative.initiatives, [("nine", 9), ("eight", 8), ("seven", 7)])
+        initiative.clear()
+        self.assertEqual(len(initiative.initiatives), 0)
 
 if __name__ == '__main__':
     unittest.main()
