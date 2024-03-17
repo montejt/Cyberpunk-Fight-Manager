@@ -1,5 +1,5 @@
 """
-    The InitiativeList holds an ordered list of names and their corresponding initative number,
+    The InitiativeList holds an ordered list of names and their corresponding initiative number,
     ordered by desc initiative
 
     Format: [(name, initiative),...]
@@ -32,14 +32,14 @@ class InitiativeList:
 
         for foundName, initiative in ((c, i) for c, i in self.initiatives if c == name):
             self.initiatives.remove((foundName, initiative))
-            print("{foundName} removed from initative")
+            print("{foundName} removed from initiative")
             break
         else:
             print("Could not find {name} within the initiative")
 
     def clear(self):
         self.initiatives = []
-        print("Initative cleared")
+        print("Initiative cleared")
 
     def print(self):
         print(str(self))
