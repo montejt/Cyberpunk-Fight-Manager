@@ -1,9 +1,9 @@
 import tkinter as tk
 from tkinter import scrolledtext
 
-from FightManager import NpcManager as nm
-from FightManager import InitiativeQueue as iq
-from FightManager.Npc import Npc
+from tools.initiative import InitiativeQueue
+from tools.npc import Npc
+from tools.npcmanager import NpcManager
 
 SMALL_ENTRY_SIZE = 5
 MED_ENTRY_SIZE = 20
@@ -14,19 +14,8 @@ CONFIRM_COLOR = "#00d123"
 
 MODIFIERS_FRAME = "mod_frame.frame.modifiers"
 
-queue = iq.InitiativeQueue()
-manager = nm.NpcManager()
-
-""""""
-
-queue.add("bob", 17)
-queue.add("him", 16)
-
-manager.add(Npc("bob", 30, 11, 11, 3))
-manager.get("bob").modifiers.append("mortally wounded")
-manager.get("bob").modifiers.append("broken leg")
-""""""
-
+queue = InitiativeQueue()
+manager = NpcManager()
 
 def set_npc_ds(npc, ds):
     npc.ds = ds
@@ -494,14 +483,12 @@ class Application(tk.Frame):
                         tk.Label(mods_frame, text="{}".format(npc.statuses[mod][2])) \
                             .grid(row=len(curr_mods) * 2, column=3)
 
-
 """
     Destroys the given Frame and removes the given name from the initiative queue
 """
 def remove_queue_entry(entryframe, name: str):
     entryframe.destroy()
     queue.remove(name)
-
 
 root = tk.Tk()
 app = Application(master=root)

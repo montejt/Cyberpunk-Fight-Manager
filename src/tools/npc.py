@@ -3,7 +3,6 @@ import random
 
 HURT_TYPE_ERROR = "Given damage type is unknown"
 
-
 class Npc:
 
     statuses = {
@@ -170,5 +169,3 @@ class Npc:
         self.spb = max(0, self.spb)
         self.sph = max(0, self.sph)
         print("Target status:\n" + str(self))
-
-

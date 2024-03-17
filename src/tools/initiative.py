@@ -3,8 +3,6 @@
 
     Form: [(name, initiative),...]
 """
-
-
 class InitiativeQueue:
     def __init__(self):
         self.queue = []

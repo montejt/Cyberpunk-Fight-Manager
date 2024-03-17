@@ -1,7 +1,8 @@
 import unittest
-from ..NpcManager import *
+from src.tools.npcmanager import NpcManager
+from src.tools.npc import Npc
 
-class MyTestCase(unittest.TestCase):
+class Test(unittest.TestCase):
     def test_add_remove(self):
         # Add and remove an npc
         mng = NpcManager()

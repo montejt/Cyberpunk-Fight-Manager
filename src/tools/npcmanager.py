@@ -1,9 +1,8 @@
+from .npc import Npc
+
 """
     The NpcManager serves as a way to keep track of Npcs
 """
-from FightManager.Npc import Npc
-
-
 class NpcManager:
     def __init__(self):
         self.npcs = set()

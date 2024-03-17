@@ -1,7 +1,7 @@
 import unittest
-from ..Npc import *
+from src.tools.npc import Npc
 
-class MyTestCase(unittest.TestCase):
+class Test(unittest.TestCase):
     # Test npc creation
     def test_create(self):
         npc = Npc("bob", 30, 11, 12, 3)

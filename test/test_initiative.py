@@ -1,10 +1,7 @@
 import unittest
-from FightManager.InitiativeQueue import InitiativeQueue
+from src.tools.initiative import InitiativeQueue
 
-"""
-    Unit tests for the FightManager.InitiativeQueue Python class
-"""
-class MyTestCase(unittest.TestCase):
+class Test(unittest.TestCase):
     def test_add(self):
         # Add 1
         queue = InitiativeQueue()
