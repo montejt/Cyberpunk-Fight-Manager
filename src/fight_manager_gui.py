@@ -1,69 +1,61 @@
 import tkinter as tk
-from tkinter import scrolledtext
+
+# Fix blurry fonts due to dpi
+from ctypes import windll
+windll.shcore.SetProcessDpiAwareness(1)
 
 from tools.initiative import InitiativeList
 from tools.npc import Npc
 from tools.npcmanager import NpcManager
+from tools.types.damagetype import DamageType
+from tools.types.target import Target
+from tools.types.conditions import Conditions
 
 SMALL_ENTRY_SIZE = 5
 MED_ENTRY_SIZE = 20
-QUEUE_PADDING = 10
+COMPONENT_PADDING = 10
 
 CANCEL_COLOR = "#ff3b48"
 CONFIRM_COLOR = "#00d123"
 
+PRIMARY_COLOR = "#ad1818"
+BACKGROUND_COLOR = "#212121"
+
+TITLE_FONT = ("Electrolize", "11", "bold")
+TITLE_FONT_COLOR = "#ffffff"
+
 MODIFIERS_FRAME = "mod_frame.frame.modifiers"
 
-queue = InitiativeList()
+initiativeList = InitiativeList()
 manager = NpcManager()
-
-def set_npc_ds(npc, ds):
-    npc.ds = ds
-    print("Set {} ds to {}".format(npc.name, ds))
-
-
-def set_npc_spb(npc, spb):
-    npc.spb = spb
-    print("Set {} spb to {}".format(npc.name, spb))
-
-
-def set_npc_sph(npc, sph):
-    npc.sph = sph
-    print("Set {} sph to {}".format(npc.name, sph))
-
-
-def set_npc_hp(npc, hp):
-    npc.hp = hp
-    print("Set {} hp to {}".format(npc.name, hp))
-
 
 class Application(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
         self.pack()
 
-        mod_frame = tk.Frame(self, padx=QUEUE_PADDING, name="mod_frame")
+        mod_frame = tk.Frame(self, padx=COMPONENT_PADDING, name="mod_frame", bg=BACKGROUND_COLOR)
         mod_frame.pack(side="left", fill="both")
 
         self.create_mod_info_frame(mod_frame)
 
-        npc_frame = tk.Frame(self)
+        npc_frame = tk.Frame(self, bg=BACKGROUND_COLOR)
         npc_frame.pack(side="left")
 
         # Create the interactive npc manager gui
         self.create_npc_manager(npc_frame)
 
-        queue_frame = tk.Frame(self, padx=QUEUE_PADDING)
+        queue_frame = tk.Frame(self, padx=COMPONENT_PADDING, bg=BACKGROUND_COLOR)
         queue_frame.pack(side="right", fill="y")
 
         # Create the initiative queue gui
         self.create_initiative_queue(queue_frame)
 
     def create_mod_info_frame(self, parent):
-        modifier_frame = tk.Frame(parent, bg="red", relief="solid", bd=2, name="frame")
+        modifier_frame = tk.Frame(parent, bg=PRIMARY_COLOR, relief="solid", bd=2, name="frame")
         modifier_frame.pack(side="top", fill="both")
 
-        tk.Label(modifier_frame, text="Modifiers").pack(side="top")
+        tk.Label(modifier_frame, text="Modifiers", bg=PRIMARY_COLOR, fg=TITLE_FONT_COLOR, font=TITLE_FONT).pack(side="top")
 
         tk.Frame(modifier_frame, name="modifiers").pack(side="top")
 
@@ -74,10 +66,10 @@ class Application(tk.Frame):
         frame is given
     """
     def create_npc_manager(self, parent):
-        manager_frame = tk.Frame(parent, bg="red", name="managerframe", relief="solid", bd=2)
+        manager_frame = tk.Frame(parent, bg=PRIMARY_COLOR, name="managerframe", relief="solid", bd=2)
         manager_frame.pack(side="top")
 
-        title = tk.Label(manager_frame, text="Npcs", name="manager_title")
+        title = tk.Label(manager_frame, text="Npcs", name="manager_title", bg=PRIMARY_COLOR, fg=TITLE_FONT_COLOR, font=TITLE_FONT)
         title.pack()
 
         # Populate the frame with npcs
@@ -209,7 +201,7 @@ class Application(tk.Frame):
         tk.Label(type_frame, text="TYPE").pack(side="top")
         type_def = tk.StringVar()
         type_def.set("Select Type")
-        type_menu = tk.OptionMenu(type_frame, type_def, *["Default", "Melee", "Armor Piercing", "Armor Breaking", "Straight"])
+        type_menu = tk.OptionMenu(type_frame, type_def, *[dt.value for dt in DamageType])
         type_menu.pack(side="left")
 
         # Create the damage target Frame
@@ -218,7 +210,7 @@ class Application(tk.Frame):
         tk.Label(target_frame, text="TARGET").pack(side="top")
         target_def = tk.StringVar()
         target_def.set("Select Target")
-        target_menu = tk.OptionMenu(target_frame, target_def, *["Body", "Head"])
+        target_menu = tk.OptionMenu(target_frame, target_def, *[t.value for t in Target])
         target_menu.pack(side="left")
 
         # Create the crit Button
@@ -232,9 +224,9 @@ class Application(tk.Frame):
         # Hurt button will call the hurt function when clicked
         hurt_btn["command"] = lambda: self.hurt_npc(parent.master, npc, dmg_value, type_def, target_def, crit_var)
 
-    def hurt_npc(self, manager_frame, npc, dmg_var, dmg_type_var, target_var, crit_var):
+    def hurt_npc(self, manager_frame, npc: Npc, dmg_var, dmg_type_var, target_var, crit_var):
         if dmg_var.get() >= 0 and dmg_type_var.get() != "Select Type" and target_var.get() != "Select Target" and crit_var.get() in [0, 1]:
-            npc.hurt(dmg_var.get(), dmg_type_var.get().lower(), target_var.get().lower(), crit_var.get() == 1)
+            manager.hurt(npc.name, dmg_var.get(), dmg_type_var.get(), target_var.get(), crit_var.get() == 1)
 
             # Update gui npc values
             self.update_npc(manager_frame, npc)
@@ -312,10 +304,10 @@ class Application(tk.Frame):
         Creates an autosorted and interactable initiative queue
     """
     def create_initiative_queue(self, parent):
-        frame = tk.Frame(parent, bg="red", name="initframe", relief="solid", bd=2)
+        frame = tk.Frame(parent, bg=PRIMARY_COLOR, name="initframe", relief="solid", bd=2)
         frame.pack(side="top")
 
-        title = tk.Label(frame, text="Initiative Queue", name="queuelabel")
+        title = tk.Label(frame, text="Initiative Queue", name="queuelabel", bg=PRIMARY_COLOR, fg=TITLE_FONT_COLOR, font=TITLE_FONT)
         title.pack()
 
         self.fill_initiative_queue(frame)
@@ -328,7 +320,7 @@ class Application(tk.Frame):
         for child in (c for c in frame.winfo_children() if c.winfo_name() != "queuelabel"):
             child.destroy()
         # Fill the queue with entries
-        for name, initiative in queue.queue:
+        for name, initiative in initiativeList.initiatives:
             # Create the name label
             entryframe = tk.Frame(frame, relief="solid", bd=2)
             entryframe.pack(side="top", fill="x")
@@ -373,17 +365,17 @@ class Application(tk.Frame):
         Adds the given name and initiative to the queue, and refreshes the gui
     """
     def add_queue_entry(self, frame, name, initative):
-        queue.add(name, initative)
+        initiativeList.add(name, initative)
         self.fill_initiative_queue(frame)
 
     """
         Updates the initiative of the given name to be the given initiative and then refreshes the initative queue gui
     """
     def update_queue_entry(self, frame, name, initiative):
-        if queue.get_initiative(name) != initiative:
+        if initiativeList.get_initiative(name) != initiative:
             # Initiative has updated, so update in backend
-            queue.remove(name)
-            queue.add(name, initiative)
+            initiativeList.remove(name)
+            initiativeList.add(name, initiative)
             self.fill_initiative_queue(frame)
 
     """
@@ -450,47 +442,70 @@ class Application(tk.Frame):
 
         tk.Label(mods_frame, text="Status").grid(row=0, column=0)
         tk.Label(mods_frame, text="Effect").grid(row=0, column=1)
-        tk.Label(mods_frame, text="Quick Fix").grid(row=0, column=2)
+        tk.Label(mods_frame, text="Quick Fix / Stabilization").grid(row=0, column=2)
         tk.Label(mods_frame, text="Treatment").grid(row=0, column=3)
 
+        all_conditions = Conditions.get_all_conditions()
+
         # Create new info
+        conditions = set()
         for npc in manager.npcs:
-            for mod in npc.modifiers:
-                mod = mod.lower()
-                if mod in npc.short_status_to_long.keys():
-                    mod = npc.short_status_to_long[mod]
-                if mod in npc.statuses and mod not in curr_mods:
-                    curr_mods.add(mod)
-                    # Name
-                    tk.Label(mods_frame, text="{}".format(mod.capitalize()))\
-                        .grid(row=len(curr_mods) * 2, column=0)
+            for modifier in npc.modifiers:
+                if modifier in all_conditions.keys():
+                    conditions.add(modifier)
 
-                    # Effect
-                    effect_scrollbar = tk.Scrollbar(mods_frame, orient="horizontal")
-                    effect_scrollbar.grid(row=len(curr_mods)*2 + 1, column=1, sticky=tk.N+tk.S+tk.E+tk.W)
-                    effect_text = tk.Text(mods_frame, wrap=tk.NONE, height=0, width=50,
-                                          xscrollcommand=effect_scrollbar.set, font=("Helvetica", 8))
-                    effect_text.grid(row=len(curr_mods) * 2, column=1)
-                    effect_scrollbar.config(command=effect_text.xview)
-                    effect_text.insert(tk.END, npc.statuses[mod][0])
+        for i, condition in enumerate(conditions):
 
-                    # Quick Fix
-                    tk.Label(mods_frame, text="{}".format(npc.statuses[mod][1])) \
-                        .grid(row=len(curr_mods) * 2, column=2)
+            effect = all_conditions[condition][0]
+            quick_fix = all_conditions[condition][1]
+            treatment = all_conditions[condition][2]
 
-                    if len(npc.statuses[mod]) >= 3:
-                        # Treatment
-                        tk.Label(mods_frame, text="{}".format(npc.statuses[mod][2])) \
-                            .grid(row=len(curr_mods) * 2, column=3)
+            # Name
+            tk.Label(mods_frame, text="{}".format(condition), wraplength=100)\
+                .grid(row=(i + 1) * 2, column=0, sticky=tk.W, padx=2)
+
+            # Effect
+            tk.Label(mods_frame, text="{}".format(effect), wraplength=200)\
+                .grid(row=(i + 1) * 2, column=1, sticky=tk.W, padx=2)
+
+            # Quick Fix
+            if quick_fix is not None:
+                tk.Label(mods_frame, text="{}".format(quick_fix), wraplength=200)\
+                    .grid(row=(i + 1) * 2, column=2, sticky=tk.W, padx=2)
+
+            # Treatment
+            if treatment is not None:
+                tk.Label(mods_frame, text="{}".format(treatment), wraplength=200)\
+                    .grid(row=(i + 1) * 2, column=3, sticky=tk.W, padx=2)
 
 """
     Destroys the given Frame and removes the given name from the initiative queue
 """
 def remove_queue_entry(entryframe, name: str):
     entryframe.destroy()
-    queue.remove(name)
+    initiativeList.remove(name)
+
+def set_npc_ds(npc, ds):
+    npc.ds = ds
+    print("Set {} ds to {}".format(npc.name, ds))
+
+def set_npc_spb(npc, spb):
+    npc.spb = spb
+    print("Set {} spb to {}".format(npc.name, spb))
+
+def set_npc_sph(npc, sph):
+    npc.sph = sph
+    print("Set {} sph to {}".format(npc.name, sph))
+
+def set_npc_hp(npc, hp):
+    npc.hp = hp
+    print("Set {} hp to {}".format(npc.name, hp))
 
 root = tk.Tk()
+
+# Configure window theming
+root.configure(bg=BACKGROUND_COLOR)
+
 app = Application(master=root)
 app.master.title("Cyberpunk Fight Manager")
 app.mainloop()
