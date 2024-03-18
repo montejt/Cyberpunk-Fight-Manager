@@ -18,7 +18,7 @@ class InitiativeFrame(tk.Frame):
         self.create_initiative_queue()
 
     def create_initiative_queue(self):
-        frame = tk.Frame(self, bg=PRIMARY_COLOR_ONE, name="initframe", relief="solid", bd=2)
+        frame = tk.Frame(self, bg=PRIMARY_COLOR_ONE, name="initframe", relief="solid", bd=COMPONENT_FRAME_BD)
         frame.pack(side="top", fill="x")
 
         title = tk.Label(frame, text="Initiative Queue", name="queuelabel", bg=PRIMARY_COLOR_ONE, fg=PRIMARY_COLOR_FG, font=TITLE_FONT)

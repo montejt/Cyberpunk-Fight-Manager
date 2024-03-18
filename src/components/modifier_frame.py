@@ -18,12 +18,19 @@ class ModifierFrame(tk.Frame):
         self.create_mod_info_frame()
 
     def create_mod_info_frame(self):
-        modifier_frame = tk.Frame(self, bg=PRIMARY_COLOR_ONE, relief="solid", bd=2, name="frame")
-        modifier_frame.pack(side="top", fill="both")
 
-        tk.Label(modifier_frame, text="Modifiers", bg=PRIMARY_COLOR_ONE, fg=PRIMARY_COLOR_FG, font=TITLE_FONT).pack(side="top")
+        frame = tk.Frame(self, bg=PRIMARY_COLOR_ONE, name="frame", relief="solid", bd=COMPONENT_FRAME_BD)
+        frame.pack(side="top", fill="x")
 
-        tk.Frame(modifier_frame, name="modifiers").pack(expand="true", side="top", fill="both")
+        tk.Label(frame, text="Modifiers", bg=PRIMARY_COLOR_ONE, fg=PRIMARY_COLOR_FG, font=TITLE_FONT)\
+            .pack(side="top", fill="x")
+
+        mods_frame = tk.Frame(frame, name="modifiers")
+        mods_frame.pack(side="top", fill="x")
+
+        # Unify col weights to enable scaling
+        for i in range(CONDITIONS_COLUMNS):
+            mods_frame.columnconfigure(i, weight=1)
 
         self.refresh_modifiers_frame()
 
@@ -34,12 +41,10 @@ class ModifierFrame(tk.Frame):
         for child in mods_frame.winfo_children():
             child.destroy()
 
-        curr_mods = set()
-
-        tk.Label(mods_frame, text="Status").grid(row=0, column=0)
-        tk.Label(mods_frame, text="Effect").grid(row=0, column=1)
-        tk.Label(mods_frame, text="Quick Fix / Stabilization").grid(row=0, column=2)
-        tk.Label(mods_frame, text="Treatment").grid(row=0, column=3)
+        tk.Label(mods_frame, text="Status").grid(row=0, column=0, sticky='ew')
+        tk.Label(mods_frame, text="Effect").grid(row=0, column=1, sticky='ew')
+        tk.Label(mods_frame, text="Quick Fix / Stabilization").grid(row=0, column=2, sticky='ew')
+        tk.Label(mods_frame, text="Treatment").grid(row=0, column=3, sticky='ew')
 
         all_conditions = Conditions.get_all_conditions()
 
@@ -52,24 +57,25 @@ class ModifierFrame(tk.Frame):
 
         for i, condition in enumerate(conditions):
 
+            curr_row = i + 1
+            curr_row_color = BG_COLOR_ONE if curr_row % 2 == 1 else BG_COLOR_TWO
+
             effect = all_conditions[condition][0]
             quick_fix = all_conditions[condition][1]
             treatment = all_conditions[condition][2]
 
             # Name
-            tk.Label(mods_frame, text="{}".format(condition), wraplength=100)\
-                .grid(row=(i + 1) * 2, column=0, sticky="w", padx=2)
+            tk.Label(mods_frame, text="{}".format(condition), wraplength=100, bg=curr_row_color)\
+                .grid(row=curr_row, column=0, sticky="nesw", padx=0, ipadx=2)
 
             # Effect
-            tk.Label(mods_frame, text="{}".format(effect), justify="left", wraplength=200)\
-                .grid(row=(i + 1) * 2, column=1, sticky="w", padx=2)
+            tk.Label(mods_frame, text="{}".format(effect), justify="left", wraplength=200, bg=curr_row_color)\
+                .grid(row=curr_row, column=1, sticky="nesw", padx=0, ipadx=2)
 
             # Quick Fix
-            if quick_fix is not None:
-                tk.Label(mods_frame, text="{}".format(quick_fix), justify="left", bd=0, wraplength=200)\
-                    .grid(row=(i + 1) * 2, column=2, sticky="w", padx=2)
+            tk.Label(mods_frame, text="{}".format(quick_fix if quick_fix is not None else ""), justify="left", wraplength=200, bg=curr_row_color)\
+                .grid(row=curr_row, column=2, sticky="nesw", padx=0, ipadx=2)
                 
             # Treatment
-            if treatment is not None:
-                tk.Label(mods_frame, bd=1, text="{}".format(treatment), justify="left", wraplength=200)\
-                    .grid(row=(i + 1) * 2, column=3, sticky="w", padx=2)
+            tk.Label(mods_frame, bd=1, text="{}".format(treatment if treatment is not None else ""), justify="left", wraplength=200, bg=curr_row_color)\
+                .grid(row=curr_row, column=3, sticky="nesw", padx=0, ipadx=2)

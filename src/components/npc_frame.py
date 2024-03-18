@@ -10,7 +10,7 @@ from style.fonts import *
 from style.numbers import *
 
 class NpcFrame(tk.Frame):
-        
+
     def __init__(self, parent, npc_manager: NpcManager, refresh_modifier_frame):
         super(NpcFrame, self).__init__(bg=WINDOW_BACKGROUND_COLOR)
         self.pack(expand="true", side="left", fill="both")
@@ -27,7 +27,7 @@ class NpcFrame(tk.Frame):
         frame is given
     """
     def create_npc_manager(self):
-        manager_frame = tk.Frame(self, bg=PRIMARY_COLOR_ONE, name="managerframe", relief="solid", bd=2)
+        manager_frame = tk.Frame(self, bg=PRIMARY_COLOR_ONE, name="managerframe", relief="solid", bd=COMPONENT_FRAME_BD)
         manager_frame.pack(side="top", fill="x")
 
         title = tk.Label(manager_frame, text="Npcs", name="manager_title", bg=PRIMARY_COLOR_ONE, fg=PRIMARY_COLOR_FG, font=TITLE_FONT)
@@ -107,18 +107,21 @@ class NpcFrame(tk.Frame):
 
         # Create an add button for new modifiers
         modsframe = tk.Frame(npc_frame)
-        modsframe.pack(side="top")
+        modsframe.pack(side="top", fill="x")
 
         input_mod_frame = tk.Frame(modsframe)
-        input_mod_frame.pack(side="left")
+        input_mod_frame.pack(side="left", fill="x")
 
         mod_input = tk.StringVar()
         mod_input.set("MODIFIER")
         tk.Entry(input_mod_frame, textvariable=mod_input, width=MED_ENTRY_SIZE).pack(side="left")
 
-        mod_add_btn = tk.Button(input_mod_frame, text="+", bg=CONFIRM_COLOR, font=ADD_FONT,
+
+        confirm_image = tk.PhotoImage(file="src/resources/confirm_button.png").subsample(CONFIRM_BUTTON_SUBSAMPLE, CONFIRM_BUTTON_SUBSAMPLE)
+        mod_add_btn = tk.Button(input_mod_frame, image=confirm_image, bd=0, padx=0, pady=0,
                                 command=lambda modsframe=modsframe, npc=npc, mod_input=mod_input:
                                 self.add_modifier(modsframe, npc, mod_input))
+        mod_add_btn.image = confirm_image
         mod_add_btn.pack(side="right")
 
         # Create the frame for modifiers. Each modifier has text and a delete button
@@ -270,9 +273,12 @@ class NpcFrame(tk.Frame):
 
         tk.Label(modframe, text=modifier).pack(side="left")
 
-        mod_del_btn = tk.Button(modframe, text="-", bg=CANCEL_COLOR, height=0, font=DEL_FONT,
+        cancel_image = tk.PhotoImage(file="src/resources/cancel_button.png").subsample(CANCEL_BUTTON_SUBSAMPLE, CANCEL_BUTTON_SUBSAMPLE)
+        mod_del_btn = tk.Button(modframe, image=cancel_image, bd=0, padx=0, pady=0,
                                 command=lambda: self.delete_modifier(modframe, npc, modifier))
-        mod_del_btn.pack(side="right")
+        # Save image as reference to avoid garbage collection: https://stackoverflow.com/questions/22200003/tkinter-button-not-showing-image
+        mod_del_btn.image = cancel_image
+        mod_del_btn.pack(side="left")
 
     """
         Destroys the given frame (meant to be a modifier Frame), and removes the given modifier from the given npc
