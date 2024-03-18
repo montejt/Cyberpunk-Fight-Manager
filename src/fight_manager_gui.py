@@ -4,6 +4,7 @@ import ctypes as ct
 from components.initiative_frame import InitiativeFrame
 from components.modifier_frame import ModifierFrame
 from components.npc_frame import NpcFrame
+from components.toolbar_menu import MenuBar
 from tools.npcmanager import NpcManager
 
 from style.fonts import *
@@ -15,6 +16,10 @@ class Application(tk.Frame):
         self.pack(side='top', fill='both')
 
         self.npc_manager = NpcManager()
+
+        # Initialize menu bar
+        self.menubar = MenuBar(parent)
+        parent.config(menu=self.menubar)
 
         # Initialize component frames
         self.modifier_frame = ModifierFrame(self, self.npc_manager)
