@@ -322,18 +322,18 @@ class NpcFrame(tk.Frame):
         # Refresh the modifiers info frame
         self.refresh_modifier_frame()
 
-    def set_npc_ds(npc, ds):
+    def set_npc_ds(self, npc, ds):
         npc.ds = ds
         print("Set {} ds to {}".format(npc.name, ds))
 
-    def set_npc_spb(npc, spb):
+    def set_npc_spb(self, npc, spb):
         npc.spb = spb
         print("Set {} spb to {}".format(npc.name, spb))
 
-    def set_npc_sph(npc, sph):
+    def set_npc_sph(self, npc, sph):
         npc.sph = sph
         print("Set {} sph to {}".format(npc.name, sph))
 
-    def set_npc_hp(npc, hp):
+    def set_npc_hp(self, npc, hp):
         npc.hp = hp
         print("Set {} hp to {}".format(npc.name, hp))
