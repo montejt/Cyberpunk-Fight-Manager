@@ -33,7 +33,7 @@ class NpcManager:
         npc = self.get(name)
 
         # Calculate hp loss
-        hploss = self.calcHpLoss(damage, dmg_type, target, npc.spb if target == Target.BODY else npc.sph, crit)
+        hploss = self.calcHpLoss(damage, dmg_type, target, npc.spb if target == Target.BODY.value else npc.sph, crit)
 
         # Ablate armor from npc
         armor_ablation = 2 if dmg_type == DamageType.ARMOR_BREAKING.value else 1

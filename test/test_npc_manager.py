@@ -47,6 +47,15 @@ class Test(unittest.TestCase):
         # One damage, one ablation
         self.assertEqual([49,11,10],[bob.hp,bob.sph,bob.spb])
 
+    def test_hurt_standard_body_partially_blocked_multiple(self):
+        bob = self.mng.get("bob")
+        self.mng.hurt("bob", 12, DamageType.STANDARD.value, Target.BODY.value, False)
+        # One damage, one ablation
+        self.assertEqual([49,11,10],[bob.hp,bob.sph,bob.spb])
+        self.mng.hurt("bob", 12, DamageType.STANDARD.value, Target.BODY.value, False)
+        # One damage, one ablation
+        self.assertEqual([47,11,9],[bob.hp,bob.sph,bob.spb])
+
     def test_hurt_standard_body_crit(self):
         bob = self.mng.get("bob")
         self.mng.hurt("bob", 1, DamageType.STANDARD.value, Target.BODY.value, True)
