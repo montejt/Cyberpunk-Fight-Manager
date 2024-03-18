@@ -22,7 +22,7 @@ class ModifierFrame(tk.Frame):
         frame = tk.Frame(self, bg=PRIMARY_COLOR_ONE, name="frame", relief="solid", bd=COMPONENT_FRAME_BD)
         frame.pack(side="top", fill="x")
 
-        tk.Label(frame, text="Modifiers", bg=PRIMARY_COLOR_ONE, fg=PRIMARY_COLOR_FG, font=TITLE_FONT)\
+        tk.Label(frame, text="Conditions", bg=PRIMARY_COLOR_ONE, fg=PRIMARY_COLOR_FG, font=TITLE_FONT)\
             .pack(side="top", fill="x")
 
         mods_frame = tk.Frame(frame, name="modifiers")

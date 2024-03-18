@@ -4,6 +4,7 @@ from tools.types.damagetype import DamageType
 from tools.types.target import Target
 from tools.npc import Npc
 from tools.npcmanager import NpcManager
+from tools.types.conditions import Conditions
 
 from style.colors import *
 from style.fonts import *
@@ -23,8 +24,7 @@ class NpcFrame(tk.Frame):
         self.create_npc_manager()
 
     """
-        Creates a Frame to house a list of Npcs, and then populates it with Npcs from the Npc Manager. Parent of the
-        frame is given
+        Creates a Frame to house a list of Npcs, and then populates it with Npcs from the Npc Manager
     """
     def create_npc_manager(self):
         manager_frame = tk.Frame(self, bg=PRIMARY_COLOR_ONE, name="managerframe", relief="solid", bd=COMPONENT_FRAME_BD)
@@ -112,14 +112,16 @@ class NpcFrame(tk.Frame):
         input_mod_frame = tk.Frame(modsframe)
         input_mod_frame.pack(side="left", fill="x")
 
-        mod_input = tk.StringVar()
-        mod_input.set("MODIFIER")
-        tk.Entry(input_mod_frame, textvariable=mod_input, width=MED_ENTRY_SIZE).pack(side="left")
+        mod_selected = tk.StringVar()
+        mod_selected.set("CONDITION")
+        # tk.Entry(input_mod_frame, textvariable=mod_selected, width=MED_ENTRY_SIZE).pack(side="left")
 
+        mod_drop = tk.OptionMenu(input_mod_frame, mod_selected, *Conditions.get_all_conditions().keys(), )
+        mod_drop.pack(side="left")
 
         confirm_image = tk.PhotoImage(file="src/resources/confirm_button.png").subsample(CONFIRM_BUTTON_SUBSAMPLE, CONFIRM_BUTTON_SUBSAMPLE)
         mod_add_btn = tk.Button(input_mod_frame, image=confirm_image, bd=0, padx=0, pady=0,
-                                command=lambda modsframe=modsframe, npc=npc, mod_input=mod_input:
+                                command=lambda modsframe=modsframe, npc=npc, mod_input=mod_selected:
                                 self.add_modifier(modsframe, npc, mod_input))
         mod_add_btn.image = confirm_image
         mod_add_btn.pack(side="right")
@@ -294,9 +296,9 @@ class NpcFrame(tk.Frame):
         Adds the modifier in the given mod_input to the npc (then clears it), and creates a mod Frame and fills it:
         adding it to the given modsframe
     """
-    def add_modifier(self, modsframe, npc, mod_input):
+    def add_modifier(self, modsframe, npc, mod_input: tk.StringVar):
         modifier = mod_input.get()
-        mod_input.set("")
+        mod_input.set("CONDITION")
         npc.modifiers.append(modifier)
         self.create_npc_modifier_frame(modsframe, npc, modifier)
 
