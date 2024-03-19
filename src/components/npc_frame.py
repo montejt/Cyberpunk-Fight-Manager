@@ -166,8 +166,9 @@ class NpcFrame(tk.Frame):
         type_frame.pack(side="left", padx=5)
         tk.Label(type_frame, text="TYPE").pack(side="top")
         type_def = tk.StringVar()
-        type_def.set("Select Type")
+        type_def.set(DamageType.STANDARD.value)
         type_menu = tk.OptionMenu(type_frame, type_def, *[dt.value for dt in DamageType])
+        type_menu.config(width=TYPE_SELECTOR_WIDTH)
         type_menu.pack(side="left")
 
         # Create the damage target Frame
@@ -175,8 +176,9 @@ class NpcFrame(tk.Frame):
         target_frame.pack(side="left", padx=5)
         tk.Label(target_frame, text="TARGET").pack(side="top")
         target_def = tk.StringVar()
-        target_def.set("Select Target")
+        target_def.set(Target.BODY.value)
         target_menu = tk.OptionMenu(target_frame, target_def, *[t.value for t in Target])
+        target_menu.config(width=TARGET_SELECTOR_WIDTH)
         target_menu.pack(side="left")
 
         # Create the crit Button
