@@ -52,24 +52,25 @@ class InitiativeFrame(tk.Frame):
             entryinit.bind("<FocusOut>", lambda event, n=name, i=initvar: self.update_initiative_entry(frame, n, i.get()))
             entryinit.pack(side="right")
 
-        # Create a custom entry
         customframe = tk.Frame(frame, relief="sunken", bd=5)
         customframe.pack(side="top", fill="x")
 
+        # Create a custom initiative name entry
         namevar = tk.StringVar()
         namevar.set("NAME")
         entername = tk.Entry(customframe, textvariable=namevar, width=MED_ENTRY_SIZE)
-        entername.pack(side="left", fill="x")
-
-        initiative = tk.IntVar()
-        initiative.set("0")
-        enterinit = tk.Entry(customframe, textvariable=initiative, width=SMALL_ENTRY_SIZE)
-        enterinit.pack(side="left")
+        entername.pack(side="left", fill="x", padx=INITIATIVE_ENTRY_PADDING)
 
         # Create an add button, which adds the inputted entry
         addbtn = tk.Button(customframe, text="+", bg=CONFIRM_COLOR, font=ADD_FONT,
                            command=lambda: self.add_queue_entry(frame, namevar.get(), initiative.get()))
         addbtn.pack(side="right")
+
+        # Create custom initiative entry to the right, left of the add button
+        initiative = tk.IntVar()
+        initiative.set("0")
+        enterinit = tk.Entry(customframe, textvariable=initiative, width=SMALL_ENTRY_SIZE)
+        enterinit.pack(side="right", padx=INITIATIVE_ENTRY_PADDING)
 
     # Adds the given name and initiative to the queue, and refreshes the gui
     def add_queue_entry(self, frame, name, initiative):
