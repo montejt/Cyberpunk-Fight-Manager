@@ -13,8 +13,7 @@ from style.numbers import *
 class NpcFrame(tk.Frame):
 
     def __init__(self, parent, npc_manager: NpcManager, refresh_modifier_frame):
-        super(NpcFrame, self).__init__(bg=WINDOW_BACKGROUND_COLOR)
-        self.pack(expand="true", side="left", fill="both")
+        super(NpcFrame, self).__init__(master=parent, bg=WINDOW_BACKGROUND_COLOR)
 
         self.manager = npc_manager
 

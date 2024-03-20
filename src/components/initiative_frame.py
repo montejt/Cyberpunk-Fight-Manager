@@ -9,8 +9,7 @@ from style.numbers import *
 class InitiativeFrame(tk.Frame):
 
     def __init__(self, parent):
-        super(InitiativeFrame, self).__init__(padx=COMPONENT_PADDING, bg=WINDOW_BACKGROUND_COLOR)
-        self.pack(expand="true", side="left", fill="both")
+        super(InitiativeFrame, self).__init__(master=parent, padx=COMPONENT_PADDING, bg=WINDOW_BACKGROUND_COLOR)
         
         self.initiativeList = InitiativeList()
 

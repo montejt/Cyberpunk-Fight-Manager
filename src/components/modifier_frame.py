@@ -10,8 +10,7 @@ from style.numbers import *
 class ModifierFrame(tk.Frame):
 
     def __init__(self, parent, npc_manager: NpcManager):
-        super(ModifierFrame, self).__init__(padx=COMPONENT_PADDING, name="mod_frame", bg=WINDOW_BACKGROUND_COLOR)
-        self.pack(expand="true", side="left", fill="both")
+        super(ModifierFrame, self).__init__(master=parent, padx=COMPONENT_PADDING, name="mod_frame", bg=WINDOW_BACKGROUND_COLOR)
 
         self.manager = npc_manager
 

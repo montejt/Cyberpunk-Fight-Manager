@@ -12,8 +12,8 @@ from style.colors import *
 
 class Application(tk.Frame):
     def __init__(self, parent):
-        super().__init__(parent)
-        self.pack(side='top', fill='both')
+        super().__init__(parent, bg=WINDOW_BACKGROUND_COLOR)
+        self.pack(side="top", fill="x")
 
         self.npc_manager = NpcManager()
 
@@ -22,9 +22,17 @@ class Application(tk.Frame):
         parent.config(menu=self.menubar)
 
         # Initialize component frames
+        self.columnconfigure(0, weight=3)
         self.modifier_frame = ModifierFrame(self, self.npc_manager)
+        self.modifier_frame.grid(row=0, column=0, sticky="new")
+
+        self.columnconfigure(1, weight=3)
         self.npc_frame = NpcFrame(self, self.npc_manager, self.modifier_frame.refresh_modifiers_frame)
+        self.npc_frame.grid(row=0, column=1, sticky="new")
+
+        self.columnconfigure(2, weight=1)
         self.initiative_frame = InitiativeFrame(self)
+        self.initiative_frame.grid(row=0, column=2, sticky="new")
 
 def configure_window(window):
     # Dark title bar
