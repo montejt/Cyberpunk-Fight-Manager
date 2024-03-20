@@ -9,3 +9,5 @@ PRIMARY_COLOR_FG = "#ffffff"
 
 CANCEL_COLOR = "#ff3b48"
 CONFIRM_COLOR = "#00d123"
+
+HURT_BTN_COLOR = "#d98a3b"

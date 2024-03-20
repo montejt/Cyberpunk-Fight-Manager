@@ -51,71 +51,72 @@ class NpcFrame(tk.Frame):
         Creates and populates an npc frame within the parent for the given npc
     """
     def create_npc_frame(self, parent, npc):
-        # Create Frame to house npc frame and button frame
-        frame = tk.Frame(parent, relief="solid", bd=2, name=npc.name.lower() + "_npc_main_frame")
-        frame.pack(side="top", fill="x")
+        # Create Frame to house all of the npc's info
+        npc_frame = tk.Frame(parent, name="npc_frame", relief="solid", bd=2)
+        npc_frame.pack(side="top", fill="x")
 
-        npc_frame = tk.Frame(frame, name="npc_frame")
-        npc_frame.pack(side="left", fill="x")
+        del_btn = tk.Button(npc_frame, bg=CANCEL_COLOR, text="-", font=DEL_FONT, command=lambda: self.delete_npc(npc_frame, npc))
+        del_btn.pack(side="right", fill="y")
 
         name_label = tk.Label(npc_frame, text=npc.name)
         name_label.pack(side="top", fill="x")
 
-        # Create and fill the info frame
+        # The info frame holds all the npc's stats
         info_frame = tk.Frame(npc_frame, name="info_frame")
-        info_frame.pack(side="top", fill="x")
+        info_frame.pack(side="top")
 
         # HP
-        tk.Label(info_frame, text="HP:").pack(side="left")
+        tk.Label(info_frame, text="HP:").pack(side="left", padx=SMALL_TEXT_PADDING)
         hpvar = tk.IntVar()
         hpvar.set(npc.hp)
-        hp_entry = tk.Entry(info_frame, textvariable=hpvar, name="hp", width=SMALL_ENTRY_SIZE)
+        hp_entry = tk.Entry(info_frame, textvariable=hpvar, name="hp", width=SMALL_ENTRY_SIZE, justify="center")
         hp_entry.pack(side="left")
         hp_entry.bind("<Key-Return>", lambda event: self.set_npc_hp(npc, hpvar.get()))
         hp_entry.bind("<FocusOut>", lambda event: self.set_npc_hp(npc, hpvar.get()))
-        tk.Label(info_frame, text="/" + str(npc.maxhp)).pack(side="left")
+        tk.Label(info_frame, text=" / " + str(npc.maxhp)).pack(side="left")
 
         # SPH
         tk.Label(info_frame, text="SPH:").pack(side="left")
         sphvar = tk.IntVar()
         sphvar.set(npc.sph)
-        sph_entry = tk.Entry(info_frame, textvariable=sphvar, name="sph", width=SMALL_ENTRY_SIZE)
+        sph_entry = tk.Entry(info_frame, textvariable=sphvar, name="sph", width=SMALL_ENTRY_SIZE, justify="center")
         sph_entry.pack(side="left")
         sph_entry.bind("<Key-Return>", lambda event: self.set_npc_sph(npc, sphvar.get()))
         sph_entry.bind("<FocusOut>", lambda event: self.set_npc_sph(npc, sphvar.get()))
-        tk.Label(info_frame, text="/" + str(npc.maxsph)).pack(side="left")
+        tk.Label(info_frame, text=" / " + str(npc.maxsph)).pack(side="left")
 
         # SPB
         tk.Label(info_frame, text="SPB:").pack(side="left")
         spbvar = tk.IntVar()
         spbvar.set(npc.spb)
-        spb_entry = tk.Entry(info_frame, textvariable=spbvar, name="spb", width=SMALL_ENTRY_SIZE)
+        spb_entry = tk.Entry(info_frame, textvariable=spbvar, name="spb", width=SMALL_ENTRY_SIZE, justify="center")
         spb_entry.pack(side="left")
         spb_entry.bind("<Key-Return>", lambda event: self.set_npc_spb(npc, spbvar.get()))
         spb_entry.bind("<FocusOut>", lambda event: self.set_npc_spb(npc, spbvar.get()))
-        tk.Label(info_frame, text="/" + str(npc.maxspb)).pack(side="left")
+        tk.Label(info_frame, text=" / " + str(npc.maxspb)).pack(side="left")
 
         # DS
         tk.Label(info_frame, text="DS:").pack(side="left")
         dsvar = tk.IntVar()
         dsvar.set(npc.ds)
-        ds_entry = tk.Entry(info_frame, textvariable=dsvar, name="ds", width=SMALL_ENTRY_SIZE)
+        ds_entry = tk.Entry(info_frame, textvariable=dsvar, name="ds", width=SMALL_ENTRY_SIZE, justify="center")
         ds_entry.pack(side="left")
         ds_entry.bind("<Key-Return>", lambda event: self.set_npc_ds(npc, dsvar.get()))
         ds_entry.bind("<FocusOut>", lambda event: self.set_npc_ds(npc, dsvar.get()))
 
-        # Create an add button for new modifiers
+        # Create the hurt frame
+        self.create_npc_hurt_frame(npc_frame, npc)
+
+        # Create frame to hold modifier option menu and modifiers
         modsframe = tk.Frame(npc_frame)
         modsframe.pack(side="top", fill="x")
 
         input_mod_frame = tk.Frame(modsframe)
-        input_mod_frame.pack(side="left", fill="x")
+        input_mod_frame.pack(side="left")
 
         mod_selected = tk.StringVar()
         mod_selected.set("CONDITION")
-        # tk.Entry(input_mod_frame, textvariable=mod_selected, width=MED_ENTRY_SIZE).pack(side="left")
-
-        mod_drop = tk.OptionMenu(input_mod_frame, mod_selected, *Conditions.get_all_conditions().keys(), )
+        mod_drop = tk.OptionMenu(input_mod_frame, mod_selected, *Conditions.get_all_conditions().keys())
         mod_drop.pack(side="left")
 
         confirm_image = tk.PhotoImage(file="src/resources/confirm_button.png").subsample(CONFIRM_BUTTON_SUBSAMPLE, CONFIRM_BUTTON_SUBSAMPLE)
@@ -129,35 +130,24 @@ class NpcFrame(tk.Frame):
         for modifier in npc.modifiers:
             self.create_npc_modifier_frame(modsframe, npc, modifier)
 
-        # Create the delete button Frame
-        del_btn_frame = tk.Frame(frame)
-        del_btn_frame.pack(side="right", fill="y")
-
-        del_btn = tk.Button(del_btn_frame, bg=CANCEL_COLOR, text="-", font=DEL_FONT,
-                            command=lambda: self.delete_npc(frame, npc))
-        del_btn.pack(side="right", fill="y")
-
-        # Create the hurt frame
-        self.create_npc_hurt_frame(npc_frame, npc)
-
         # Refresh the modifiers info frame
         self.refresh_modifier_frame()
 
     def create_npc_hurt_frame(self, parent, npc):
         # Create the hurt frame
         frame = tk.Frame(parent)
-        frame.pack(side="bottom")
+        frame.pack(side="top")
 
         # Create the hurt button
-        hurt_btn = tk.Button(frame, text="Hurt")
-        hurt_btn.pack(side="left", padx=5)
+        hurt_btn = tk.Button(frame, text="DMG", relief="raised", bd=5, bg=HURT_BTN_COLOR, font=HURT_FONT)
+        hurt_btn.pack(side="left", fill="y", padx=5)
 
         # Create the Damage frame
         dmg_frame = tk.Frame(frame)
-        dmg_frame.pack(side="left")
+        dmg_frame.pack(side="left", fill="y")
         tk.Label(dmg_frame, text="DMG").pack(side="top")
         dmg_value = tk.IntVar()
-        dmg_entry = tk.Entry(dmg_frame, textvariable=dmg_value, width=SMALL_ENTRY_SIZE)
+        dmg_entry = tk.Entry(dmg_frame, textvariable=dmg_value, width=SMALL_ENTRY_SIZE, justify="center")
         dmg_entry.pack(side="bottom", padx=5)
 
         # Create the damage type Frame
@@ -240,24 +230,28 @@ class NpcFrame(tk.Frame):
         info_frame.pack(side="top")
 
         # HP
-        tk.Label(info_frame, text="HP:").pack(side="left")
+        tk.Label(info_frame, text="HP:").pack(side="left", padx=SMALL_TEXT_PADDING)
         hpvar = tk.IntVar()
-        tk.Entry(info_frame, textvariable=hpvar, name="inputhp", width=SMALL_ENTRY_SIZE).pack(side="left")
+        tk.Entry(info_frame, textvariable=hpvar, name="inputhp", width=SMALL_ENTRY_SIZE, justify="center")\
+            .pack(side="left", padx=SMALL_TEXT_PADDING)
 
         # SPH
         tk.Label(info_frame, text="SPH:").pack(side="left")
         sphvar = tk.IntVar()
-        tk.Entry(info_frame, textvariable=sphvar, name="inputsph", width=SMALL_ENTRY_SIZE).pack(side="left")
+        tk.Entry(info_frame, textvariable=sphvar, name="inputsph", width=SMALL_ENTRY_SIZE, justify="center")\
+            .pack(side="left", padx=SMALL_TEXT_PADDING)
 
         # SPB
         tk.Label(info_frame, text="SPB:").pack(side="left")
         spbvar = tk.IntVar()
-        tk.Entry(info_frame, textvariable=spbvar, name="inputspb", width=SMALL_ENTRY_SIZE).pack(side="left")
+        tk.Entry(info_frame, textvariable=spbvar, name="inputspb", width=SMALL_ENTRY_SIZE, justify="center")\
+            .pack(side="left", padx=SMALL_TEXT_PADDING)
 
         # DS
         tk.Label(info_frame, text="DS:").pack(side="left")
         dsvar = tk.IntVar()
-        tk.Entry(info_frame, textvariable=dsvar, name="inputds", width=SMALL_ENTRY_SIZE).pack(side="left")
+        tk.Entry(info_frame, textvariable=dsvar, name="inputds", width=SMALL_ENTRY_SIZE, justify="center")\
+            .pack(side="left", padx=SMALL_TEXT_PADDING)
 
         # Create the button Frame, which houses the add button
         btn_frame = tk.Frame(frame)
