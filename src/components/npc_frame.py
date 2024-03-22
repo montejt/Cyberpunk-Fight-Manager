@@ -26,36 +26,42 @@ class NpcFrame(tk.Frame):
         Creates a Frame to house a list of Npcs, and then populates it with Npcs from the Npc Manager
     """
     def create_npc_manager(self):
-        manager_frame = tk.Frame(self, bg=PRIMARY_COLOR_ONE, name="managerframe", relief="solid", bd=COMPONENT_FRAME_BD)
+        manager_frame = tk.Frame(self, bg=PRIMARY_COLOR_ONE, name="manager_frame", relief="solid", bd=COMPONENT_FRAME_BD)
         manager_frame.pack(side="top", fill="x")
 
-        title = tk.Label(manager_frame, text="Npcs", name="manager_title", bg=PRIMARY_COLOR_ONE, fg=PRIMARY_COLOR_FG, font=TITLE_FONT)
+        title = tk.Label(manager_frame, text="Npcs", bg=PRIMARY_COLOR_ONE, fg=PRIMARY_COLOR_FG, font=TITLE_FONT)
         title.pack()
 
         # Populate the frame with npcs
-        self.populate_npcs(manager_frame)
+        populated_npc_frame = tk.Frame(manager_frame, name="populated_npc_frame")
+        populated_npc_frame.pack(side="top", fill="x")
+        self.populate_npcs(populated_npc_frame)
 
         # Create the Npc input Frame
-        self.create_input_npc_frame(manager_frame)
+        self.create_input_npc_frame(manager_frame, populated_npc_frame)
 
     """
         Populates the given frame with all Npcs from the Npc Manager. Npcs are listed from top to bottom, and include:
         hp (changeable), spb (changeable), sph (changeable), ds (changeable), and a list of modifiers. Modifiers
         can be added, and removed.
     """
-    def populate_npcs(self, frame):
+    def populate_npcs(self, populated_npc_frame):
+        
+        for child in populated_npc_frame.winfo_children():
+            child.destroy()
+
         for npc in self.manager.npcs:
-            self.create_npc_frame(frame, npc)
+            self.create_npc_frame(populated_npc_frame, npc)
 
     """
         Creates and populates an npc frame within the parent for the given npc
     """
-    def create_npc_frame(self, parent, npc):
+    def create_npc_frame(self, populated_npc_frame, npc: Npc):
         # Create Frame to house all of the npc's info
-        npc_frame = tk.Frame(parent, name="npc_frame", relief="solid", bd=2)
+        npc_frame = tk.Frame(populated_npc_frame, relief="solid", bd=2)
         npc_frame.pack(side="top", fill="x")
 
-        del_btn = tk.Button(npc_frame, bg=CANCEL_COLOR, text="-", font=DEL_FONT, command=lambda: self.delete_npc(npc_frame, npc))
+        del_btn = tk.Button(npc_frame, bg=CANCEL_COLOR, text="-", font=DEL_FONT, command=lambda: self.delete_npc(populated_npc_frame, npc))
         del_btn.pack(side="right", fill="y")
 
         name_label = tk.Label(npc_frame, text=npc.name)
@@ -101,7 +107,7 @@ class NpcFrame(tk.Frame):
         dsvar.set(npc.ds)
         ds_entry = tk.Entry(info_frame, textvariable=dsvar, name="ds", width=SMALL_ENTRY_SIZE, justify="center")
         ds_entry.pack(side="left")
-        ds_entry.bind("<Key-Return>", lambda event: self.set_npc_ds(npc, dsvar.get()))
+        ds_entry.bind("<Key-Return>", lambda event: npc. self.set_npc_ds(npc, dsvar.get()))
         ds_entry.bind("<FocusOut>", lambda event: self.set_npc_ds(npc, dsvar.get()))
 
         # Create the hurt frame
@@ -133,9 +139,9 @@ class NpcFrame(tk.Frame):
         # Refresh the modifiers info frame
         self.refresh_modifier_frame()
 
-    def create_npc_hurt_frame(self, parent, npc):
+    def create_npc_hurt_frame(self, npc_frame, npc):
         # Create the hurt frame
-        frame = tk.Frame(parent)
+        frame = tk.Frame(npc_frame)
         frame.pack(side="top")
 
         # Create the hurt button
@@ -179,31 +185,31 @@ class NpcFrame(tk.Frame):
         crit_btn.pack(side="bottom")
 
         # Hurt button will call the hurt function when clicked
-        hurt_btn["command"] = lambda: self.hurt_npc(parent.master, npc, dmg_value, type_def, target_def, crit_var)
+        hurt_btn["command"] = lambda: self.hurt_npc(npc_frame, npc, dmg_value, type_def, target_def, crit_var)
 
-    def hurt_npc(self, manager_frame, npc: Npc, dmg_var, dmg_type_var, target_var, crit_var):
-        if dmg_var.get() >= 0 and dmg_type_var.get() != "Select Type" and target_var.get() != "Select Target" and crit_var.get() in [0, 1]:
+    def hurt_npc(self, npc_frame, npc: Npc, dmg_var, dmg_type_var, target_var, crit_var):
+        if dmg_var.get() >= 0:
             self.manager.hurt(npc.name, dmg_var.get(), dmg_type_var.get(), target_var.get(), crit_var.get() == 1)
 
             # Update gui npc values
-            self.update_npc(manager_frame, npc)
+            self.update_npc(npc_frame, npc)
         else:
             print("Invalid hurt user gui input")
 
-    def update_npc(self, manager_frame, npc):
-        hp_entry = manager_frame.nametowidget("npc_frame.info_frame.hp")
+    def update_npc(self, npc_frame, npc):
+        hp_entry = npc_frame.nametowidget("info_frame.hp")
         hp_entry.delete(0, tk.END)
         hp_entry.insert(0, npc.hp)
 
-        sph_entry = manager_frame.nametowidget("npc_frame.info_frame.sph")
+        sph_entry = npc_frame.nametowidget("info_frame.sph")
         sph_entry.delete(0, tk.END)
         sph_entry.insert(0, npc.sph)
 
-        spb_entry = manager_frame.nametowidget("npc_frame.info_frame.spb")
+        spb_entry = npc_frame.nametowidget("info_frame.spb")
         spb_entry.delete(0, tk.END)
         spb_entry.insert(0, npc.spb)
 
-        ds_entry = manager_frame.nametowidget("npc_frame.info_frame.ds")
+        ds_entry = npc_frame.nametowidget("info_frame.ds")
         ds_entry.delete(0, tk.END)
         ds_entry.insert(0, npc.ds)
 
@@ -211,10 +217,10 @@ class NpcFrame(tk.Frame):
         Creates a template Npc Frame as a child of the given parent. This Frame can be filled out and used to create
         an Npc and populated Npc Frame
     """
-    def create_input_npc_frame(self, parent):
+    def create_input_npc_frame(self, manager_frame, populated_npc_frame):
         # Overall frame, which houses input Frame, and the button Frame
-        frame = tk.Frame(parent, pady=10, relief="sunken", bd=10, name="npc_input_frame")
-        frame.pack(side="bottom", fill="x")
+        frame = tk.Frame(manager_frame, pady=10, relief="sunken", bd=10, name="npc_input_frame")
+        frame.pack(side="top", fill="x")
 
         # Create the Input Frame
         input_frame = tk.Frame(frame)
@@ -258,7 +264,7 @@ class NpcFrame(tk.Frame):
         btn_frame.pack(side="right", fill="y")
 
         add_btn = tk.Button(btn_frame, text="+", bg=CONFIRM_COLOR, font=ADD_FONT,
-                            command=lambda: self.create_npc(parent, namevar, hpvar, sphvar, spbvar, dsvar))
+                            command=lambda: self.create_npc(populated_npc_frame, namevar, hpvar, sphvar, spbvar, dsvar))
         add_btn.pack(side="right", fill="y")
 
     """
@@ -304,17 +310,17 @@ class NpcFrame(tk.Frame):
         Creates an Npc using the given info, adds them to the Npc Manager, and then creates and populates an Npc Frame
         for the created Npc as a child of the given parent Frame.
     """
-    def create_npc(self, parent, name, hp, sph, spb, ds):
+    def create_npc(self, populated_npc_frame, name, hp, sph, spb, ds):
         if hp.get() != "" and sph.get() != "" and spb.get() != "" and ds.get() != "" and self.manager.get(name.get()) is None:
             npc = Npc(name.get(), hp.get(), sph.get(), spb.get(), ds.get())
             self.manager.add(npc)
-            self.create_npc_frame(parent, npc)
 
-    def delete_npc(self, npc_frame, npc):
-        npc_frame.destroy()
+            self.populate_npcs(populated_npc_frame)
+
+    def delete_npc(self, populated_npc_frame, npc):
         self.manager.remove(npc)
 
-        # Refresh the modifiers info frame
+        self.populate_npcs(populated_npc_frame)
         self.refresh_modifier_frame()
 
     def set_npc_ds(self, npc, ds):

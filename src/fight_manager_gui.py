@@ -22,6 +22,7 @@ class Application(tk.Frame):
         parent.config(menu=self.menubar)
 
         # Initialize component frames
+        self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=3)
         self.modifier_frame = ModifierFrame(self, self.npc_manager)
         self.modifier_frame.grid(row=0, column=0, sticky="new")
