@@ -1,4 +1,5 @@
 import tkinter as tk
+import logging
 
 from tools.types.damagetype import DamageType
 from tools.types.target import Target
@@ -14,6 +15,8 @@ class NpcFrame(tk.Frame):
 
     def __init__(self, parent, npc_manager: NpcManager, refresh_modifier_frame):
         super(NpcFrame, self).__init__(master=parent, bg=WINDOW_BACKGROUND_COLOR)
+        parent.columnconfigure(1, weight=3)
+        self.grid(row=0, column=1, sticky="new")
 
         self.manager = npc_manager
 
@@ -45,9 +48,9 @@ class NpcFrame(tk.Frame):
         hp (changeable), spb (changeable), sph (changeable), ds (changeable), and a list of modifiers. Modifiers
         can be added, and removed.
     """
-    def populate_npcs(self, populated_npc_frame):
+    def populate_npcs(self, populated_npc_frame: tk.Frame):
         
-        for child in populated_npc_frame.winfo_children():
+        for child in populated_npc_frame.pack_slaves():
             child.destroy()
 
         for npc in self.manager.npcs:
@@ -194,7 +197,7 @@ class NpcFrame(tk.Frame):
             # Update gui npc values
             self.update_npc(npc_frame, npc)
         else:
-            print("Invalid hurt user gui input")
+            logging.info("Invalid hurt input!")
 
     def update_npc(self, npc_frame, npc):
         hp_entry = npc_frame.nametowidget("info_frame.hp")
@@ -300,7 +303,7 @@ class NpcFrame(tk.Frame):
     def add_modifier(self, modsframe, npc, mod_input: tk.StringVar):
         modifier = mod_input.get()
         mod_input.set("CONDITION")
-        npc.modifiers.append(modifier)
+        npc.modifiers.add(modifier)
         self.create_npc_modifier_frame(modsframe, npc, modifier)
 
         # Refresh the modifier info frame

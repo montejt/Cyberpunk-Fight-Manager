@@ -11,6 +11,8 @@ class ModifierFrame(tk.Frame):
 
     def __init__(self, parent, npc_manager: NpcManager):
         super(ModifierFrame, self).__init__(master=parent, padx=COMPONENT_PADDING, name="mod_frame", bg=WINDOW_BACKGROUND_COLOR)
+        parent.columnconfigure(0, weight=3)
+        self.grid(row=0, column=0, sticky="new")
 
         self.manager = npc_manager
 

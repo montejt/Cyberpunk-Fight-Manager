@@ -1,10 +1,13 @@
 import tkinter as tk
 import ctypes as ct
+import logging
+from tkinter.scrolledtext import ScrolledText
 
 from components.initiative_frame import InitiativeFrame
 from components.modifier_frame import ModifierFrame
 from components.npc_frame import NpcFrame
 from components.toolbar_menu import MenuBar
+from components.text_handler import TextHandler
 from tools.npcmanager import NpcManager
 
 from style.fonts import *
@@ -13,7 +16,7 @@ from style.colors import *
 class Application(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent, bg=WINDOW_BACKGROUND_COLOR)
-        self.pack(side="top", fill="x")
+        self.pack(side="top", fill="both")
 
         self.npc_manager = NpcManager()
 
@@ -23,17 +26,20 @@ class Application(tk.Frame):
 
         # Initialize component frames
         self.rowconfigure(0, weight=1)
-        self.columnconfigure(0, weight=3)
         self.modifier_frame = ModifierFrame(self, self.npc_manager)
-        self.modifier_frame.grid(row=0, column=0, sticky="new")
-
-        self.columnconfigure(1, weight=3)
         self.npc_frame = NpcFrame(self, self.npc_manager, self.modifier_frame.refresh_modifiers_frame)
-        self.npc_frame.grid(row=0, column=1, sticky="new")
-
-        self.columnconfigure(2, weight=1)
         self.initiative_frame = InitiativeFrame(self)
-        self.initiative_frame.grid(row=0, column=2, sticky="new")
+
+        # Add text widget to damage log info
+        st = ScrolledText(parent, state='disabled', bg=WINDOW_BACKGROUND_COLOR, fg=PRIMARY_COLOR_FG)
+        st.configure(font='TkFixedFont')
+        st.pack(side='bottom', fill='x')
+
+        # Configure logging into the scrolled text
+        text_handler = TextHandler(st)
+        logging.basicConfig(filename='test.log', level=logging.INFO, format='%(message)s')        
+        logger = logging.getLogger()
+        logger.addHandler(text_handler)
 
 def configure_window(window):
     # Dark title bar

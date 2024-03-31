@@ -28,7 +28,7 @@ class Npc:
         self.maxsph = int(sph)
 
         self.ds = ds
-        self.modifiers = []
+        self.modifiers = set()
 
     def print(self):
         print(str(self))
@@ -36,6 +36,6 @@ class Npc:
     def __str__(self):
         main_info = "{}: {}/{} hp | {}/{} head sp | {}/{} body sp".format(self.name, self.hp, self.maxhp, self.sph,
                                                                           self.maxsph, self.spb, self.maxspb)
-        death_save = "Death Save: {}".format(self.ds)
-        modifiers = "Modifiers: {}".format(self.modifiers)
+        death_save = "  Death Save: {}".format(self.ds)
+        modifiers = "  Modifiers: {}".format(self.modifiers)
         return main_info + "\n" + death_save + "\n" + modifiers

@@ -1,5 +1,6 @@
 import math
 import random
+import logging
 from .npc import Npc
 from .types.damagetype import DamageType
 from .types.target import Target
@@ -29,6 +30,9 @@ class NpcManager:
             print("No npc with name \"{}\"".format(name))
 
     def hurt(self, name: str, damage: int, dmg_type=DamageType.STANDARD.value, target=Target.BODY.value, crit=False):
+        logging.info("Dealing {} {} {} damage to {}".format(damage, dmg_type, target, name))
+        if crit:
+            logging.info("  With a crit")
 
         npc = self.get(name)
 
@@ -38,17 +42,21 @@ class NpcManager:
         # Ablate armor from npc
         armor_ablation = 2 if dmg_type == DamageType.ARMOR_BREAKING.value else 1
         if (target == Target.BODY.value and dmg_type != DamageType.STRAIGHT.value and hploss > 0):
+            logging.info("  Body armor ablated by {}".format(armor_ablation))
             npc.spb = max(npc.spb - armor_ablation, 0)
         elif (target == Target.HEAD.value and dmg_type != DamageType.STRAIGHT.value and hploss > 0):
+            logging.info("  Head armor ablated by {}".format(armor_ablation))
             npc.sph = max(npc.sph - armor_ablation, 0)
 
         if (crit):
             # Crit damage (5) goes straight to health and doesn't ablate armor
+            logging.info("  CRIT! Roll on the crit table")
             hploss += 5
 
+        logging.info("  Took {} damage".format(hploss))
         npc.hp = max(npc.hp - hploss, 0)
 
-        print("Target status:\n" + str(npc))
+        logging.info(str(npc) + "\n")
 
     def calcHpLoss(self, dmg: int, type: str, target: str, sp: int, crit: bool):
         

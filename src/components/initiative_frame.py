@@ -10,6 +10,8 @@ class InitiativeFrame(tk.Frame):
 
     def __init__(self, parent):
         super(InitiativeFrame, self).__init__(master=parent, padx=COMPONENT_PADDING, bg=WINDOW_BACKGROUND_COLOR)
+        parent.columnconfigure(2, weight=1)
+        self.grid(row=0, column=2, sticky="new")
         
         self.initiativeList = InitiativeList()
 

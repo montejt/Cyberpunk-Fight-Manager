@@ -26,7 +26,7 @@ class InitiativeList:
         for foundName, initiative in ((n, i) for n, i in self.initiatives if n == name):
             return initiative
         else:
-            print("Could not find {name} within the initiative")
+            print("Could not find {} within the initiative".format(name))
 
     def remove(self, name):
 
