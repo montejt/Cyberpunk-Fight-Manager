@@ -8,6 +8,7 @@ from components.modifier_frame import ModifierFrame
 from components.npc_frame import NpcFrame
 from components.toolbar_menu import MenuBar
 from components.text_handler import TextHandler
+from components.rangefinder_frame import RangeFinderFrame
 from tools.npcmanager import NpcManager
 
 from style.fonts import *
@@ -41,6 +42,14 @@ class Application(tk.Frame):
         logger = logging.getLogger()
         logger.addHandler(text_handler)
 
+def configure_rangefinder_window(root):
+    rangefinder_window = tk.Toplevel(root)
+    rangefinder_window.transient(root)
+    rangefinder_window.title("Range Finder")
+    configure_window(rangefinder_window)
+
+    range_frame = RangeFinderFrame(rangefinder_window)
+
 def configure_window(window):
     # Dark title bar
     """
@@ -66,6 +75,10 @@ def configure_window(window):
 
 root = tk.Tk()
 configure_window(root)
-app = Application(parent=root)
-app.master.title("Cyberpunk Fight Manager")
-app.mainloop()
+
+primary_app = Application(root)
+primary_app.master.title("Cyberpunk Fight Manager")
+
+configure_rangefinder_window(root)
+
+primary_app.mainloop()
