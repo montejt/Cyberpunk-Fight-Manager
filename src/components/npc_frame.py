@@ -77,7 +77,7 @@ class NpcFrame(tk.Frame):
         # HP
         tk.Label(info_frame, text="HP:").pack(side="left", padx=SMALL_TEXT_PADDING)
         hpvar = tk.IntVar()
-        hpvar.set(npc.hp)
+        hpvar.set(npc.hp.value)
         hp_entry = tk.Entry(info_frame, textvariable=hpvar, name="hp", width=SMALL_ENTRY_SIZE, justify="center")
         hp_entry.pack(side="left")
         hp_entry.bind("<Key-Return>", lambda event: self.set_npc_hp(npc, hpvar.get()))
@@ -87,7 +87,7 @@ class NpcFrame(tk.Frame):
         # SPH
         tk.Label(info_frame, text="SPH:").pack(side="left")
         sphvar = tk.IntVar()
-        sphvar.set(npc.sph)
+        sphvar.set(npc.sph.value)
         sph_entry = tk.Entry(info_frame, textvariable=sphvar, name="sph", width=SMALL_ENTRY_SIZE, justify="center")
         sph_entry.pack(side="left")
         sph_entry.bind("<Key-Return>", lambda event: self.set_npc_sph(npc, sphvar.get()))
@@ -97,7 +97,7 @@ class NpcFrame(tk.Frame):
         # SPB
         tk.Label(info_frame, text="SPB:").pack(side="left")
         spbvar = tk.IntVar()
-        spbvar.set(npc.spb)
+        spbvar.set(npc.spb.value)
         spb_entry = tk.Entry(info_frame, textvariable=spbvar, name="spb", width=SMALL_ENTRY_SIZE, justify="center")
         spb_entry.pack(side="left")
         spb_entry.bind("<Key-Return>", lambda event: self.set_npc_spb(npc, spbvar.get()))
@@ -199,18 +199,18 @@ class NpcFrame(tk.Frame):
         else:
             logging.info("Invalid hurt input!")
 
-    def update_npc(self, npc_frame, npc):
+    def update_npc(self, npc_frame, npc: Npc):
         hp_entry = npc_frame.nametowidget("info_frame.hp")
         hp_entry.delete(0, tk.END)
-        hp_entry.insert(0, npc.hp)
+        hp_entry.insert(0, npc.hp.value)
 
         sph_entry = npc_frame.nametowidget("info_frame.sph")
         sph_entry.delete(0, tk.END)
-        sph_entry.insert(0, npc.sph)
+        sph_entry.insert(0, npc.sph.value)
 
         spb_entry = npc_frame.nametowidget("info_frame.spb")
         spb_entry.delete(0, tk.END)
-        spb_entry.insert(0, npc.spb)
+        spb_entry.insert(0, npc.spb.value)
 
         ds_entry = npc_frame.nametowidget("info_frame.ds")
         ds_entry.delete(0, tk.END)
@@ -331,13 +331,13 @@ class NpcFrame(tk.Frame):
         print("Set {} ds to {}".format(npc.name, ds))
 
     def set_npc_spb(self, npc, spb):
-        npc.spb = spb
+        npc.spb.set(spb)
         print("Set {} spb to {}".format(npc.name, spb))
 
     def set_npc_sph(self, npc, sph):
-        npc.sph = sph
+        npc.sph.set(sph)
         print("Set {} sph to {}".format(npc.name, sph))
 
     def set_npc_hp(self, npc, hp):
-        npc.hp = hp
+        npc.hp.set(hp)
         print("Set {} hp to {}".format(npc.name, hp))

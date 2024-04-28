@@ -37,16 +37,17 @@ class NpcManager:
         npc = self.get(name)
 
         # Calculate hp loss
-        hploss = self.calcHpLoss(damage, dmg_type, target, npc.spb if target == Target.BODY.value else npc.sph, crit)
+        hploss = self.calcHpLoss(damage, dmg_type, target, npc.spb.value if target == Target.BODY.value else npc.sph.value, crit)
 
         # Ablate armor from npc
         armor_ablation = 2 if dmg_type == DamageType.ARMOR_BREAKING.value else 1
         if (target == Target.BODY.value and dmg_type != DamageType.STRAIGHT.value and hploss > 0):
             logging.info("  Body armor ablated by {}".format(armor_ablation))
-            npc.spb = max(npc.spb - armor_ablation, 0)
+            npc.spb.set(max(npc.spb.value - armor_ablation, 0))
+
         elif (target == Target.HEAD.value and dmg_type != DamageType.STRAIGHT.value and hploss > 0):
             logging.info("  Head armor ablated by {}".format(armor_ablation))
-            npc.sph = max(npc.sph - armor_ablation, 0)
+            npc.sph.set(max(npc.sph.value - armor_ablation, 0))
 
         if (crit):
             # Crit damage (5) goes straight to health and doesn't ablate armor
@@ -54,7 +55,7 @@ class NpcManager:
             hploss += 5
 
         logging.info("  Took {} damage".format(hploss))
-        npc.hp = max(npc.hp - hploss, 0)
+        npc.hp.set(max(npc.hp.value - hploss, 0))
 
         logging.info(str(npc) + "\n")
 
