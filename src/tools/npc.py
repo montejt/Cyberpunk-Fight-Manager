@@ -1,7 +1,8 @@
 import math
 import random
 
-from .triggerint import TriggerInt
+from .types.triggerint import TriggerInt
+from .types.triggerset import TriggerSet
 from .types.target import Target
 
 HURT_TYPE_ERROR = "Given damage type is unknown"
@@ -17,7 +18,7 @@ class Npc:
     spb: stopping power of body armor
     ds: death save
     """
-    def __init__(self, name, hp, sph, spb, ds):
+    def __init__(self, name, hp, sph, spb, ds, update_mods):
         self.name = name
 
         self.hp = TriggerInt(hp, self.refresh_wound_status)
@@ -30,17 +31,25 @@ class Npc:
         self.maxsph = TriggerInt(sph, self.refresh_wound_status)
 
         self.ds = ds
-        self.modifiers = set()
+        self.modifiers = TriggerSet(update_mods)
 
+    """
+    Refresh the wound conditions of the npc based on their hp status
+    """
     def refresh_wound_status(self):
+        # Clear wound status
+        self.modifiers.removeIfExists("Lightly Wounded")
+        self.modifiers.removeIfExists("Seriously Wounded")
+        self.modifiers.removeIfExists("Mortally Wounded")
+
         if (self.hp.value < 1):
             self.modifiers.add("Mortally Wounded")
 
-        elif (self.hp.value < self.maxhp.value):
-            self.modifiers.add("Lightly Wounded")
-            
         elif (self.hp.value < math.ceil(self.maxhp.value / 2.0)):
             self.modifiers.add("Seriously Wounded")
+
+        elif (self.hp.value < self.maxhp.value):
+            self.modifiers.add("Lightly Wounded")
 
     def print(self):
         print(str(self))

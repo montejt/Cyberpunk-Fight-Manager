@@ -289,12 +289,9 @@ class NpcFrame(tk.Frame):
     """
         Destroys the given frame (meant to be a modifier Frame), and removes the given modifier from the given npc
     """
-    def delete_modifier(self, frame, npc, modifier):
+    def delete_modifier(self, frame, npc: Npc, modifier):
         frame.destroy()
         npc.modifiers.remove(modifier)
-
-        # Refresh the modifier info frame
-        self.refresh_modifier_frame()
 
     """
         Adds the modifier in the given mod_input to the npc (then clears it), and creates a mod Frame and fills it:
@@ -306,16 +303,13 @@ class NpcFrame(tk.Frame):
         npc.modifiers.add(modifier)
         self.create_npc_modifier_frame(modsframe, npc, modifier)
 
-        # Refresh the modifier info frame
-        self.refresh_modifier_frame()
-
     """
         Creates an Npc using the given info, adds them to the Npc Manager, and then creates and populates an Npc Frame
         for the created Npc as a child of the given parent Frame.
     """
     def create_npc(self, populated_npc_frame, name, hp, sph, spb, ds):
         if hp.get() != "" and sph.get() != "" and spb.get() != "" and ds.get() != "" and self.manager.get(name.get()) is None:
-            npc = Npc(name.get(), hp.get(), sph.get(), spb.get(), ds.get())
+            npc = Npc(name.get(), hp.get(), sph.get(), spb.get(), ds.get(), self.refresh_modifier_frame)
             self.manager.add(npc)
 
             self.populate_npcs(populated_npc_frame)
