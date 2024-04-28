@@ -18,7 +18,7 @@ class Npc:
     spb: stopping power of body armor
     ds: death save
     """
-    def __init__(self, name, hp, sph, spb, ds, update_mods):
+    def __init__(self, name: str, hp, sph, spb, ds):
         self.name = name
 
         self.hp = TriggerInt(hp, self.refresh_wound_status)
@@ -31,7 +31,9 @@ class Npc:
         self.maxsph = TriggerInt(sph, self.refresh_wound_status)
 
         self.ds = ds
-        self.modifiers = TriggerSet(update_mods)
+    
+    def initialize_modifiers(self, callback):
+        self.modifiers = TriggerSet(callback)
 
     """
     Refresh the wound conditions of the npc based on their hp status

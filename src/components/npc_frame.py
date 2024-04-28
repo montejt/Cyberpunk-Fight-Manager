@@ -61,7 +61,7 @@ class NpcFrame(tk.Frame):
     """
     def create_npc_frame(self, populated_npc_frame, npc: Npc):
         # Create Frame to house all of the npc's info
-        npc_frame = tk.Frame(populated_npc_frame, relief="solid", bd=2)
+        npc_frame = tk.Frame(populated_npc_frame, name=npc.name.lower(), relief="solid", bd=2)
         npc_frame.pack(side="top", fill="x")
 
         del_btn = tk.Button(npc_frame, bg=CANCEL_COLOR, text="-", font=DEL_FONT, command=lambda: self.delete_npc(populated_npc_frame, npc))
@@ -117,7 +117,7 @@ class NpcFrame(tk.Frame):
         self.create_npc_hurt_frame(npc_frame, npc)
 
         # Create frame to hold modifier option menu and modifiers
-        modsframe = tk.Frame(npc_frame)
+        modsframe = tk.Frame(npc_frame, name="mods_frame")
         modsframe.pack(side="top", fill="x")
 
         input_mod_frame = tk.Frame(modsframe)
@@ -130,17 +130,17 @@ class NpcFrame(tk.Frame):
 
         confirm_image = tk.PhotoImage(file="src/resources/confirm_button.png").subsample(CONFIRM_BUTTON_SUBSAMPLE, CONFIRM_BUTTON_SUBSAMPLE)
         mod_add_btn = tk.Button(input_mod_frame, image=confirm_image, bd=0, padx=0, pady=0,
-                                command=lambda modsframe=modsframe, npc=npc, mod_input=mod_selected:
-                                self.add_modifier(modsframe, npc, mod_input))
+                                command=lambda npc=npc, mod_input=mod_selected:
+                                npc.modifiers.add(mod_input.get()))
         mod_add_btn.image = confirm_image
         mod_add_btn.pack(side="right")
 
         # Create the frame for modifiers. Each modifier has text and a delete button
-        for modifier in npc.modifiers:
-            self.create_npc_modifier_frame(modsframe, npc, modifier)
+        modsholder = tk.Frame(modsframe, name="mods_holder")
+        modsholder.pack(side="left", fill="x")
 
-        # Refresh the modifiers info frame
-        self.refresh_modifier_frame()
+        # Refresh the modifiers
+        self.refresh_npc_modifiers(npc, populated_npc_frame)
 
     def create_npc_hurt_frame(self, npc_frame, npc):
         # Create the hurt frame
@@ -273,35 +273,18 @@ class NpcFrame(tk.Frame):
     """
         Creates and packs a modifier frame within the given parent for the given npc. The modifier has the given name
     """
-    def create_npc_modifier_frame(self, parent, npc, modifier):
-        modframe = tk.Frame(parent)
+    def create_npc_modifier_frame(self, parent, npc: Npc, modifier: str):
+        modframe = tk.Frame(parent, name=modifier.lower())
         modframe.pack(side="left")
 
         tk.Label(modframe, text=modifier).pack(side="left")
 
         cancel_image = tk.PhotoImage(file="src/resources/cancel_button.png").subsample(CANCEL_BUTTON_SUBSAMPLE, CANCEL_BUTTON_SUBSAMPLE)
         mod_del_btn = tk.Button(modframe, image=cancel_image, bd=0, padx=0, pady=0,
-                                command=lambda: self.delete_modifier(modframe, npc, modifier))
+                                command=lambda: npc.modifiers.remove(modifier))
         # Save image as reference to avoid garbage collection: https://stackoverflow.com/questions/22200003/tkinter-button-not-showing-image
         mod_del_btn.image = cancel_image
         mod_del_btn.pack(side="left")
-
-    """
-        Destroys the given frame (meant to be a modifier Frame), and removes the given modifier from the given npc
-    """
-    def delete_modifier(self, frame, npc: Npc, modifier):
-        frame.destroy()
-        npc.modifiers.remove(modifier)
-
-    """
-        Adds the modifier in the given mod_input to the npc (then clears it), and creates a mod Frame and fills it:
-        adding it to the given modsframe
-    """
-    def add_modifier(self, modsframe, npc, mod_input: tk.StringVar):
-        modifier = mod_input.get()
-        mod_input.set("CONDITION")
-        npc.modifiers.add(modifier)
-        self.create_npc_modifier_frame(modsframe, npc, modifier)
 
     """
         Creates an Npc using the given info, adds them to the Npc Manager, and then creates and populates an Npc Frame
@@ -309,7 +292,8 @@ class NpcFrame(tk.Frame):
     """
     def create_npc(self, populated_npc_frame, name, hp, sph, spb, ds):
         if hp.get() != "" and sph.get() != "" and spb.get() != "" and ds.get() != "" and self.manager.get(name.get()) is None:
-            npc = Npc(name.get(), hp.get(), sph.get(), spb.get(), ds.get(), self.refresh_modifier_frame)
+            npc = Npc(name.get(), hp.get(), sph.get(), spb.get(), ds.get())
+            npc.initialize_modifiers(lambda npc=npc, populated_npc_frame=populated_npc_frame: self.refresh_npc_modifiers(npc, populated_npc_frame))
             self.manager.add(npc)
 
             self.populate_npcs(populated_npc_frame)
@@ -318,6 +302,21 @@ class NpcFrame(tk.Frame):
         self.manager.remove(npc)
 
         self.populate_npcs(populated_npc_frame)
+        self.refresh_modifier_frame()
+
+    def refresh_npc_modifiers(self, npc: Npc, populated_npc_frame: tk.Frame):
+        # Find the npc's mod frame
+        npc_mod_frame = populated_npc_frame.children[npc.name.lower()].children["mods_frame"].children["mods_holder"]
+        
+        # Wipe all of the children
+        for child in npc_mod_frame.winfo_children():
+            child.destroy()
+
+        # Add a new frame for all mods
+        for modifier in npc.modifiers:
+            self.create_npc_modifier_frame(npc_mod_frame, npc, modifier)
+
+        # Refresh the modifiers frame
         self.refresh_modifier_frame()
 
     def set_npc_ds(self, npc, ds):
