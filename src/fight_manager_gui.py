@@ -22,14 +22,13 @@ class Application(tk.Frame):
         self.npc_manager = NpcManager()
 
         # Initialize menu bar
-        self.menubar = MenuBar(parent, configure_rangefinder_window)
+        self.menubar = MenuBar(parent, configure_rangefinder_window, configure_initiative_window)
         parent.config(menu=self.menubar)
 
         # Initialize component frames
         self.rowconfigure(0, weight=1)
         self.modifier_frame = ModifierFrame(self, self.npc_manager)
         self.npc_frame = NpcFrame(self, self.npc_manager, self.modifier_frame.refresh_modifiers_frame)
-        self.initiative_frame = InitiativeFrame(self)
 
         # Add text widget to damage log info
         st = ScrolledText(parent, state='disabled', bg=WINDOW_BACKGROUND_COLOR, fg=PRIMARY_COLOR_FG)
@@ -49,6 +48,14 @@ def configure_rangefinder_window(root):
     configure_window(rangefinder_window)
 
     range_frame = RangeFinderFrame(rangefinder_window)
+
+def configure_initiative_window(root):
+    initiative_window = tk.Toplevel(root)
+    initiative_window.transient(root)
+    initiative_window.title("Initiative Tracker")
+    configure_window(initiative_window)
+
+    initiative_frame = InitiativeFrame(initiative_window)
 
 def configure_window(window):
     # Dark title bar
