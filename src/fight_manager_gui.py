@@ -22,7 +22,7 @@ class Application(tk.Frame):
         self.npc_manager = NpcManager()
 
         # Initialize menu bar
-        self.menubar = MenuBar(parent)
+        self.menubar = MenuBar(parent, configure_rangefinder_window)
         parent.config(menu=self.menubar)
 
         # Initialize component frames
@@ -78,7 +78,5 @@ configure_window(root)
 
 primary_app = Application(root)
 primary_app.master.title("Cyberpunk Fight Manager")
-
-configure_rangefinder_window(root)
 
 primary_app.mainloop()
